@@ -15,6 +15,7 @@ def gerar_indicadores():
         "custo_medio_paciente": random.randint(1800, 3200),
         "pacientes_internados": random.randint(180, 320),
         "tempo_medio_espera_min": random.randint(15, 90),
+        "cirurgias_hoje": random.randint(20, 60),
         "alertas": [
             {"tipo": "critico", "mensagem": "UTI Norte com 92% de ocupação"},
             {"tipo": "atencao", "mensagem": "Estoque de antibiótico X abaixo do mínimo"},
