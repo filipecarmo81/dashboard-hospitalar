@@ -16,6 +16,7 @@
         <div class="card"><h3>Pacientes Internados</h3><p id="pacientes">--</p></div>
         <div class="card"><h3>Custo Médio / Paciente</h3><p id="custo">--</p></div>
         <div class="card"><h3>Tempo Médio Espera</h3><p id="espera">--</p></div>
+        <div class="card"><h3>Cirurgias Hoje</h3><p id="cirurgias">--</p></div>
     </section>
 
     <section class="grafico">
@@ -37,6 +38,7 @@
             document.getElementById('pacientes').textContent = d.pacientes_internados;
             document.getElementById('custo').textContent = 'R$ ' + d.custo_medio_paciente.toLocaleString('pt-BR');
             document.getElementById('espera').textContent = d.tempo_medio_espera_min + ' min';
+            document.getElementById('cirurgias').textContent = d.cirurgias_hoje;
             document.getElementById('atualizado').textContent = 'Atualizado em ' + d.atualizado_em;
 
             const labels = d.ocupacao.map(o => o.unidade);
