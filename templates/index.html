@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Dashboard Hospitalar</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <header>
+        <h1>Painel de Indicadores Hospitalares</h1>
+        <span id="atualizado"></span>
+    </header>
+
+    <section class="cards">
+        <div class="card"><h3>Pacientes Internados</h3><p id="pacientes">--</p></div>
+        <div class="card"><h3>Custo Médio / Paciente</h3><p id="custo">--</p></div>
+        <div class="card"><h3>Tempo Médio Espera</h3><p id="espera">--</p></div>
+    </section>
+
+    <section class="grafico">
+        <h2>Taxa de Ocupação por Unidade</h2>
+        <canvas id="ocupacaoChart"></canvas>
+    </section>
+
+    <section class="alertas">
+        <h2>Alertas</h2>
+        <ul id="listaAlertas"></ul>
+    </section>
+
+    <script>
+        let chart;
+        async function carregar() {
+            const r = await fetch('/api/indicadores');
+            const d = await r.json();
+
+            document.getElementById('pacientes').textContent = d.pacientes_internados;
+            document.getElementById('custo').textContent = 'R$ ' + d.custo_medio_paciente.toLocaleString('pt-BR');
+            document.getElementById('espera').textContent = d.tempo_medio_espera_min + ' min';
+            document.getElementById('atualizado').textContent = 'Atualizado em ' + d.atualizado_em;
+
+            const labels = d.ocupacao.map(o => o.unidade);
+            const valores = d.ocupacao.map(o => o.taxa);
+
+            if (chart) chart.destroy();
+            chart = new Chart(document.getElementById('ocupacaoChart'), {
+                type: 'bar',
+                data: {
+                    labels,
+                    datasets: [{
+                        label: '% Ocupação',
+                        data: valores,
+                        backgroundColor: valores.map(v => v > 85 ? '#e63946' : v > 70 ? '#f4a261' : '#2a9d8f')
+                    }]
+                },
+                options: { scales: { y: { beginAtZero: true, max: 100 } } }
+            });
+
+            const ul = document.getElementById('listaAlertas');
+            ul.innerHTML = '';
+            d.alertas.forEach(a => {
+                const li = document.createElement('li');
+                li.className = a.tipo;
+                li.textContent = a.mensagem;
+                ul.appendChild(li);
+            });
+        }
+        carregar();
+        setInterval(carregar, 10000);
+    </script>
+</body>
+</html>
